@@ -11,6 +11,7 @@ EMBED_DIM = 3072
 
 splitter = SentenceSplitter(chunk_size=1000, chunk_overlap=200)
 
+
 def load_and_chunk_pdf(path: str):
     docs = PDFReader().load_data(file=path)
     texts = [d.text for d in docs if getattr(d, "text", None)]
@@ -19,9 +20,7 @@ def load_and_chunk_pdf(path: str):
         chunk.extend(splitter.split_text(t))
     return chunk
 
-def embed_texts(texts: list[str])-> list[list[float]]:
-    response = client.embeddings.create(
-        model=EMBED_MODEL,
-        input=texts
-    )
+
+def embed_texts(texts: list[str]) -> list[list[float]]:
+    response = client.embeddings.create(model=EMBED_MODEL, input=texts)
     return [item.embedding for item in response.data]
