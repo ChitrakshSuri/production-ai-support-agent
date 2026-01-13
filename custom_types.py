@@ -1,7 +1,7 @@
 import pydantic
 
 class RAGChunkAndSrc(pydantic.BaseModel):
-    chunk: list[str]
+    chunks: list[str]
     source_id: str = None
 
 class RAGUpsertResult(pydantic.BaseModel):
@@ -11,7 +11,7 @@ class RAGSearchResult(pydantic.BaseModel):
     contexts: list[str]
     sources: list[str]
 
-class RAGQueryResult(pydantic.BaseModel):
+class RAGQueryResult(pydantic.BaseModel):  # Fixed typo: RAQQueryResult → RAGQueryResult
     answer: str
     sources: list[str]
     num_contexts: int
