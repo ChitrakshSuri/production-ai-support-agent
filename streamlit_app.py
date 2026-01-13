@@ -4,10 +4,29 @@ import streamlit as st
 import inngest
 from dotenv import load_dotenv
 import requests
+import os
+
+PORT = int(os.environ.get("PORT", 8501))
 
 load_dotenv()
 
 st.set_page_config(page_title="RAG PDF System", page_icon="📄", layout="wide")
+
+BACKEND_URL = os.getenv(
+    "BACKEND_URL",
+    "https://production-ai-support-agent-production.up.railway.app"
+)
+
+INNGEST_API_BASE = os.getenv(
+    "INNGEST_API_BASE",
+    "https://api.inngest.com"
+)
+
+INNGEST_EVENT_KEY = os.getenv("INNGEST_EVENT_KEY")
+
+if not INNGEST_EVENT_KEY:
+    st.error("❌ INNGEST_EVENT_KEY not set in environment")
+    st.stop()
 
 
 @st.cache_resource
@@ -37,7 +56,10 @@ def get_run_output(event_id: str, timeout: int = 120) -> dict:
     while time.time() - start_time < timeout:
         try:
             response = requests.get(
-                f"http://127.0.0.1:8288/v1/events/{event_id}/runs"
+                f"{INNGEST_API_BASE}/v1/events/{event_id}/runs",
+                headers={
+                     "Authorization": f"Bearer {INNGEST_EVENT_KEY}"
+                }
             )
             
             if response.status_code == 200:
@@ -87,27 +109,27 @@ st.title("📄 RAG PDF System")
 # Sidebar
 with st.sidebar:
     st.header("🔧 System Status")
-    
+
     try:
-        requests.get("http://127.0.0.1:8288/", timeout=1)
-        st.success("✅ Inngest")
+        r = requests.get(f"{BACKEND_URL}/", timeout=3)
+        st.success("✅ Backend API")
     except:
-        st.error("❌ Inngest")
-    
+        st.error("❌ Backend API")
+
     try:
-        requests.get("http://127.0.0.1:8000/api/inngest", timeout=1)
-        st.success("✅ FastAPI")
+        r = requests.get(
+            f"{BACKEND_URL}/api/inngest",
+            timeout=3
+        )
+        st.success("✅ Inngest Functions")
     except:
-        st.error("❌ FastAPI")
-    
-    try:
-        requests.get("http://localhost:6333/", timeout=1)
-        st.success("✅ Qdrant")
-    except:
-        st.error("❌ Qdrant")
-    
+        st.error("❌ Inngest Functions")
+
     st.divider()
-    st.link_button("📊 Inngest Dashboard", "http://localhost:8288/runs")
+    st.link_button(
+        "📊 Inngest Dashboard",
+        "https://app.inngest.com"
+    )
 
 # Two columns
 col1, col2 = st.columns(2)
