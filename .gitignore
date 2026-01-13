@@ -1,7 +1,11 @@
-.env
-cat <<EOF > .gitignore
+# Python / env
 .venv/
 .env
+.python-version
 __pycache__/
+
+# Qdrant
+# qdrant_storage/
+
+# Logs
 *.log
-EOF
