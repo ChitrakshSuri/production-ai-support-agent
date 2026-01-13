@@ -14,7 +14,7 @@ st.set_page_config(page_title="RAG PDF System", page_icon="📄", layout="wide")
 def get_inngest_client() -> inngest.Inngest:
     return inngest.Inngest(
         app_id="rag_app", 
-        is_production=False
+        is_production=True
     )
 
 
